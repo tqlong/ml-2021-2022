@@ -1,10 +1,11 @@
 import argparse
 from time import time
 
+import numpy as np
 from PIL import Image
 import torch
 
-from dataset import easy_transforms
+from dataset import EasyTransforms
 from model import DogCatModel
 
 
@@ -18,7 +19,7 @@ def get_class_names():
 
 def get_prediction(model, image: Image.Image, device):
     with torch.no_grad():
-        image = easy_transforms.test(image)
+        image = EasyTransforms.test(image=np.array(image))["image"]
         image = image.unsqueeze(0).to(device)
         output = model(image)
         _, pred = torch.max(output, 1)
@@ -46,7 +47,7 @@ def main():
     prediction = get_prediction(model, image, args.device)
     for _ in range(1000):
         get_prediction(model, image, args.device)
-    print(prediction, f"duration {time()-start} sec(s) per 1000 predictions",)
+    print(prediction, f"duration {time()-start:.4f} sec(s) per 1000 predictions",)
 
 
 if __name__ == "__main__":

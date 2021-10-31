@@ -5,7 +5,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
 
-from dataset import MemoryImageDataset, prepare_data, easy_transforms
+from dataset import MemoryImageDataset, prepare_data, EasyTransforms
 from model import DogCatModel
 
 
@@ -25,10 +25,8 @@ class MyDataModule(pl.LightningDataModule):
 
     # noinspection PyUnusedLocal
     def setup(self, stage=None):
-        train_transform = easy_transforms.train
-        val_transform = easy_transforms.val
-        self.train = MemoryImageDataset(self.train_images, self.train_targets, transform=train_transform)
-        self.val = MemoryImageDataset(self.val_images, self.val_targets, transform=val_transform)
+        self.train = MemoryImageDataset(self.train_images, self.train_targets, transform=EasyTransforms.train)
+        self.val = MemoryImageDataset(self.val_images, self.val_targets, transform=EasyTransforms.val)
 
     def train_dataloader(self):
         return DataLoader(self.train, batch_size=self.args.batch_size, num_workers=self.args.num_workers)
@@ -51,11 +49,12 @@ def main():
     parser = MyDataModule.add_model_specific_args(parser)
     parser = DogCatModel.add_model_specific_args(parser)
     parser = pl.Trainer.add_argparse_args(parser)
+    parser.add_argument('--quick', action='store_true', help='load small dataset')
 
     args = parser.parse_args()
     net = DogCatModel(args)
 
-    images, targets = prepare_data()
+    images, targets = prepare_data(quick=args.quick)
     dm = MyDataModule(images, targets, args)
 
     checkpoint_callback = ModelCheckpoint(

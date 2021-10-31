@@ -1,15 +1,18 @@
 import zipfile
 import gzip
-from collections import namedtuple
 import os
 import pickle
+from dataclasses import dataclass
 
+import numpy as np
 from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms as T
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
 
 
-def prepare_data(create_pickle=False):
+def prepare_data(create_pickle=False, quick=False):
     """
     Download and extract the data
     :return: images: list[PIL.Image] and labels : list[int]
@@ -18,6 +21,8 @@ def prepare_data(create_pickle=False):
     if create_pickle or not os.path.exists(pkl_file):
         train_zip = zipfile.ZipFile('train.zip')
         file_names = [name for name in train_zip.namelist() if 'dog' in name or 'cat' in name]
+        if quick:
+            file_names = file_names[:1000]
         print('Loading images metadata...')
         images = [Image.open(train_zip.open(name)) for name in file_names]
         print('Reading pixels...')
@@ -60,24 +65,35 @@ class MemoryImageDataset(Dataset):
         img = self.images[idx]
         y = self.targets[idx]
         if self.transform is not None:
-            img = self.transform(img)
+            img = self.transform(image=np.array(img))["image"]
 
         return img, y
 
 
-TrainValTest = namedtuple('TrainValTest', ['train', 'val', 'test'])
-
-easy_transforms = TrainValTest(
-    train=T.Compose([
-        T.Resize(256), T.RandomHorizontalFlip(), T.RandomRotation(30),
-        T.RandomCrop(224), T.ToTensor(), T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    ]),
-    val=T.Compose([
-        T.Resize(256), T.CenterCrop(224), T.ToTensor(),
-        T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    ]),
-    test=T.Compose([
-        T.Resize(256), T.CenterCrop(224), T.ToTensor(),
-        T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+@dataclass
+class EasyTransforms:
+    train = A.Compose([
+        A.SmallestMaxSize(max_size=256, always_apply=True),
+        A.PadIfNeeded(min_height=256, min_width=256, always_apply=True),
+        A.Flip(p=0.5),
+        A.ShiftScaleRotate(shift_limit=0.0625, scale_limit=0.1, rotate_limit=30, p=0.5),
+        A.RandomCrop(height=224, width=224, always_apply=True),
+        A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), always_apply=True),
+        ToTensorV2(always_apply=True)
     ])
-)
+
+    val = A.Compose([
+        A.SmallestMaxSize(max_size=256, always_apply=True),
+        A.PadIfNeeded(min_height=256, min_width=256, always_apply=True),
+        A.CenterCrop(height=224, width=224, always_apply=True),
+        A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), always_apply=True),
+        ToTensorV2(always_apply=True)
+    ])
+
+    test = A.Compose([
+        A.SmallestMaxSize(max_size=256, always_apply=True),
+        A.PadIfNeeded(min_height=256, min_width=256, always_apply=True),
+        A.CenterCrop(height=224, width=224, always_apply=True),
+        A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), always_apply=True),
+        ToTensorV2(always_apply=True)
+    ])

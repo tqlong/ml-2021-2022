@@ -1,0 +1,6 @@
+torch
+torchvision
+torchaudio
+pytorch_lightning
+scikit-learn
+albumentations
