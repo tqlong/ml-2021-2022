@@ -5,7 +5,7 @@ https://www.kaggle.com/c/dogs-vs-cats
 
 ## Training
 ```shell
-python dog_cat.py --gpus 1 --max_epochs 10
+python train.py --gpus 1 --max_epochs 10
 ```
 - Example output: 
 ```
