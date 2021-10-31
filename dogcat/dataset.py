@@ -73,7 +73,7 @@ class MemoryImageDataset(Dataset):
 @dataclass
 class EasyTransforms:
     train = A.Compose([
-        A.SmallestMaxSize(max_size=256, always_apply=True),
+        A.LongestMaxSize(max_size=256, always_apply=True),
         A.PadIfNeeded(min_height=256, min_width=256, always_apply=True),
         A.Flip(p=0.5),
         A.ShiftScaleRotate(shift_limit=0.0625, scale_limit=0.1, rotate_limit=30, p=0.5),
@@ -83,7 +83,7 @@ class EasyTransforms:
     ])
 
     val = A.Compose([
-        A.SmallestMaxSize(max_size=256, always_apply=True),
+        A.LongestMaxSize(max_size=256, always_apply=True),
         A.PadIfNeeded(min_height=256, min_width=256, always_apply=True),
         A.CenterCrop(height=224, width=224, always_apply=True),
         A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), always_apply=True),
@@ -91,7 +91,7 @@ class EasyTransforms:
     ])
 
     test = A.Compose([
-        A.SmallestMaxSize(max_size=256, always_apply=True),
+        A.LongestMaxSize(max_size=256, always_apply=True),
         A.PadIfNeeded(min_height=256, min_width=256, always_apply=True),
         A.CenterCrop(height=224, width=224, always_apply=True),
         A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), always_apply=True),

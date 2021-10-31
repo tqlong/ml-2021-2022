@@ -15,6 +15,8 @@ class DogCatModel(pl.LightningModule):
         """
         super().__init__()
         self.features = models.resnet18(pretrained=True)
+        for param in self.features.parameters():
+            param.requires_grad = False
         # change the last layer
         self.features.fc = torch.nn.Linear(512, n_classes)
         self.args = args
