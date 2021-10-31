@@ -13,8 +13,9 @@ best checkpoint lightning_logs/ckpt1/dog-cat-resnet18-epoch=10-val_loss=0.09.ckp
 ```
 
 ## Inference
+- Download an image of dog or cat
 ```shell
-python inference.py --model lightning_logs/ckpt1/dog-cat-resnet18-epoch\=10-val_loss\=0.09.ckpt --image dog1.jp
+python inference.py --model lightning_logs/ckpt1/dog-cat-resnet18-epoch\=10-val_loss\=0.09.ckpt --image dog1.jpg
 ```
 - Example output:
 ```shell
