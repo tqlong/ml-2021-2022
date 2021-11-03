@@ -3,6 +3,11 @@ https://www.kaggle.com/c/dogs-vs-cats
 - [Dataset](https://www.kaggle.com/c/dogs-vs-cats/data)
 - Download and extract the dataset such that train.zip in root directory
 
+## Setup
+```shell
+pip install -r requirements.txt
+```
+
 ## Training
 ```shell
 python train.py --gpus 1 --max_epochs 10
