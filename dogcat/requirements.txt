@@ -4,3 +4,5 @@ torchaudio
 pytorch_lightning
 scikit-learn
 albumentations
+fastapi[all]
+python-multipart

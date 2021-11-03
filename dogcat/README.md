@@ -21,3 +21,10 @@ python inference.py --model lightning_logs/ckpt1/dog-cat-resnet18-epoch\=10-val_
 ```shell
 {'class_idx': 1, 'class_name': 'dog'} duration 10.766785383224487 sec(s) per 1000 predictions
 ```
+
+## API
+- Start the server:
+```shell
+uvicorn main:app --reload
+```
+- Go to localhost:8000/predict and try to upload an image of dog or cat
