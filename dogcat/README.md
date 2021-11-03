@@ -32,4 +32,4 @@ python inference.py --model lightning_logs/ckpt1/dog-cat-resnet18-epoch\=10-val_
 ```shell
 uvicorn main:app --reload
 ```
-- Go to localhost:8000/docs and try to upload an image of dog or cat at /predict rout
+- Go to [localhost:8000/docs](localhost:8000/docs) and try to upload an image of dog or cat at /predict rout
