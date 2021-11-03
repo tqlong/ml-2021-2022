@@ -3,8 +3,13 @@ from io import BytesIO
 
 from PIL import Image
 from fastapi import FastAPI, File, UploadFile
+from pydantic import BaseModel
 
 from inference import get_prediction, load_model
+
+class Prediction(BaseModel):
+    class_idx: int
+    class_name: str
 
 app = FastAPI()
 
@@ -18,7 +23,7 @@ def read_image_file(data) -> Image.Image:
     return image
 
 
-@app.post("/predict")
+@app.post("/predict", response_model=Prediction)
 async def predict(file: UploadFile = File(...)):
     print("upload", file.filename)
     image = read_image_file(await file.read())
